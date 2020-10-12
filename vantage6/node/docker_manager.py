@@ -312,6 +312,7 @@ class DockerManager(object):
             "PORT": os.environ.get("PROXY_SERVER_PORT", 8080),
             "API_PATH": "",
             "API_FORWARDER_PASSWORD": os.environ.get("API_FORWARDER_PASSWORD"),
+            "API_FORWARDER_PORT": os.environ.get("API_FORWARDER_PORT"),
             "PUBLIC_IP": os.environ.get("PUBLIC_IP")
         }
 

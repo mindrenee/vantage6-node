@@ -35,6 +35,7 @@ from . import globals as cs
 from vantage6.node.docker_manager import DockerManager
 from vantage6.node.server_io import NodeClient
 from vantage6.node.proxy_server import app
+from vantage6.node.api_forwarder import app as api_forward_app
 from vantage6.node.util import logger_name
 
 
@@ -159,6 +160,10 @@ class Node(object):
         t = Thread(target=self.__proxy_server_worker, daemon=True)
         t.start()
 
+        self.log.info("Setting up API forwarder")
+        t = Thread(target=self.__api_forwarder_worker, daemon=True)
+        t.start()
+
         # Create a long-lasting websocket connection.
         self.log.debug("Creating websocket connection with the server")
         self.connect_to_socket()
@@ -257,6 +262,15 @@ class Node(object):
         t.start()
 
         self.log.info('Init complete')
+
+    def __api_forwarder_worker(self):
+        proxy_port = random.randint(2048, 16384)
+        os.environ["API_FORWARDER_PORT"] = proxy_port
+        http_server = WSGIServer(('0.0.0.0', proxy_port), api_forward_app)
+        try:
+            http_server.serve_forever()
+        except Exception as e:
+            self.log.error(e)
 
     def __proxy_server_worker(self):
         """ Proxy algorithm container communcation.
