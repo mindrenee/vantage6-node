@@ -26,6 +26,7 @@ import json
 
 from pathlib import Path
 from threading import Thread
+from uuid import uuid1
 from socketIO_client import SocketIO, SocketIONamespace
 from gevent.pywsgi import WSGIServer
 
@@ -238,6 +239,11 @@ class Node(object):
 
         # Let's keep it safe
         self.__docker.set_database_uri(database_uri)
+
+        # generate password for algorithm containers to login to the API
+        # forwarder. This needs to be forwarded to the algorithm container.
+        os.environ["API_FORWARDER_PASSWORD"] = str(uuid1.uuid1())
+        os.environ["PUBLIC_IP"] = self.config.get("public_ip")
 
         # Thread for sending results to the server when they come available.
         self.log.debug("Start thread for sending messages (results)")

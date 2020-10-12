@@ -311,6 +311,8 @@ class DockerManager(object):
             "HOST": f"http://{proxy_host}",
             "PORT": os.environ.get("PROXY_SERVER_PORT", 8080),
             "API_PATH": "",
+            "API_FORWARDER_PASSWORD": os.environ.get("API_FORWARDER_PASSWORD"),
+            "PUBLIC_IP": os.environ.get("PUBLIC_IP")
         }
 
         self.log.debug(f"environment: {environment_variables}")
