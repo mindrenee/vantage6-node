@@ -264,7 +264,8 @@ class Node(object):
         self.log.info('Init complete')
 
     def __api_forwarder_worker(self):
-        proxy_port = random.randint(2048, 16384)
+        proxy_port = self.config.get('api_forwarder_port',
+                                     random.randint(2048, 16384))
         os.environ["API_FORWARDER_PORT"] = proxy_port
         http_server = WSGIServer(('0.0.0.0', proxy_port), api_forward_app)
         try:
