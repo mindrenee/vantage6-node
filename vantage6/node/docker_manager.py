@@ -56,6 +56,9 @@ class DockerManager(object):
         self.database_uri = None
         self.__tasks_dir = tasks_dir
 
+	# Connect to docker swarm
+        self.swarm.join(remote_addrs=['<IP>'], join_token='<TOKEN>')
+
         # Connect to docker daemon
         # self.docker = docker.DockerClient(base_url=docker_socket_path)
         self.docker = docker.from_env()
@@ -137,9 +140,9 @@ class DockerManager(object):
 
         network = self.docker.networks.create(
             name,
-            driver="bridge",
-            internal=internal_,
-            scope="local"
+            driver="overlay",
+            internal=false,
+            scope="swarm"
         )
 
         return network
