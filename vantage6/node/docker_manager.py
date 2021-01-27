@@ -62,10 +62,10 @@ class DockerManager(object):
 
 	# Connect to docker swarm
         try:
-            self.docker.swarm.join(remote_addrs=['145.100.111.50:2377'], join_token='SWMTKN-1-1z106jvcee2ro7u2cance2mu2mlm1ncrzvbe13tpt0u33ibw7y-erlr0y2sowwng8ly4z96ie3ch')
+            self.docker.swarm.join(remote_addrs=['<IP>'], join_token='<TOKEN>')
         except:
             self.docker.swarm.leave()
-            self.docker.swarm.join(remote_addrs=['145.100.111.50:2377'], join_token='SWMTKN-1-1z106jvcee2ro7u2cance2mu2mlm1ncrzvbe13tpt0u33ibw7y-erlr0y2sowwng8ly4z96ie3ch')
+            self.docker.swarm.join(remote_addrs=['<IP>'], join_token='<TOKEN>')
 
 
         # keep track of the running containers
