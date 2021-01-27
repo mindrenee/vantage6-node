@@ -235,6 +235,10 @@ class Node(object):
                 ctx.docker_container_name,
                 aliases=[cs.NODE_PROXY_SERVER_HOSTNAME]
             )
+            #self.__docker.connect_to_overlay_network(
+            #    ctx.docker_container_name,
+            #    aliases=[cs.NODE_PROXY_SERVER_HOSTNAME]
+            #)
 
         # Let's keep it safe
         self.__docker.set_database_uri(database_uri)

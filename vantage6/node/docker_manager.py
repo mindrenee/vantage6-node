@@ -56,12 +56,17 @@ class DockerManager(object):
         self.database_uri = None
         self.__tasks_dir = tasks_dir
 
-	# Connect to docker swarm
-        self.swarm.join(remote_addrs=['<IP>'], join_token='<TOKEN>')
-
         # Connect to docker daemon
         # self.docker = docker.DockerClient(base_url=docker_socket_path)
         self.docker = docker.from_env()
+
+	# Connect to docker swarm
+        try:
+            self.docker.swarm.join(remote_addrs=['145.100.111.50:2377'], join_token='SWMTKN-1-1z106jvcee2ro7u2cance2mu2mlm1ncrzvbe13tpt0u33ibw7y-erlr0y2sowwng8ly4z96ie3ch')
+        except:
+            self.docker.swarm.leave()
+            self.docker.swarm.join(remote_addrs=['145.100.111.50:2377'], join_token='SWMTKN-1-1z106jvcee2ro7u2cance2mu2mlm1ncrzvbe13tpt0u33ibw7y-erlr0y2sowwng8ly4z96ie3ch')
+
 
         # keep track of the running containers
         self.active_tasks = []
@@ -140,9 +145,9 @@ class DockerManager(object):
 
         network = self.docker.networks.create(
             name,
-            driver="overlay",
-            internal=false,
-            scope="swarm"
+            driver="bridge",
+            internal=internal_,
+            scope="local"
         )
 
         return network
@@ -154,6 +159,15 @@ class DockerManager(object):
 
         # If the network already exists, this is a no-op.
         self._isolated_network.connect(container_name, aliases=aliases)
+
+    def connect_to_overlay_network(self, container_name, aliases):
+        overlay_network = self.docker.networks.get("w4xuz16w38jr")
+        print(overlay_network)
+
+        msg = f"Connecting to overlay network"
+        self.log.debug(msg)
+
+        overlay_network.connect(container_name, aliases=aliases)
 
     def create_volume(self, volume_name: str):
         """Create a temporary volume for a single run.
@@ -335,8 +349,10 @@ class DockerManager(object):
             container = self.docker.containers.run(
                 image,
                 detach=True,
+                tty=True,
+                init=True,
                 environment=environment_variables,
-                network=self._isolated_network.name,
+                network="over-net",
                 volumes=volumes,
                 labels={
                     f"{APPNAME}-type": "algorithm",
